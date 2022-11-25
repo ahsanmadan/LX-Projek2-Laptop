@@ -21,74 +21,39 @@
       crossorigin="anonymous"></script>
     <link rel="shortcut icon" href="../static/icon.png" type="image/x-icon"
       sizes="25x25">
+    <link rel="stylesheet" href="../static/css.css">
   </head>
-  <style>
-        .banner{
-            width: 100%;
-            height: 200px;
-            background-color: #2f1850;
-            background-image: url(../static/logo.png);
-            background-position: center;
-            background-size: contain;
-            background-repeat: no-repeat;
-            cursor: pointer;
-        }
-
-        .wrap{
-            background-color: #DBCCF0;
-            min-height: 100vh;
-            padding-bottom: 50px;
-        }
-        .container {
-        width: 80%;
-        max-width: 800px;
-        margin: 30px auto;
-        padding: 20px;
-        background-color: white;
-        border: solid 1px gray;
-        border-radius: 10px;
-      }
-      span.example {
-        color: gray;
-        font-size: 14px;
-      }
-      .btn-sparta {
-        color: white;
-        background-color: #2f1850;
-        border-color: #2f1850 1px solid;
-      }
-      .btn-sparta:hover{
-        color: white;
-        background-color: #1b0e2e;
-        border-color: #2f1850;
-      }
-      .btn-sparta-outline {
-        color: black;
-        background-color: transparent;
-        background-image: none;
-        border: #2f1850 1px solid;
-      }
-      .btn-sparta-outline:hover{
-        color: white;
-        background-color: #2f1850;
-        border: #2f1850 1px solid;
-      }
-      .footer{
-        width: 100%;
-        height: 50px;
-        background-color:#2f1850 ;
-        color: white;
-        text-align: center;
-        line-height: 50px;
-      }
-        
-    </style>
   <body>
     <div class="wrap">
       <div class="banner" onclick="window.location.href= '/'">
       </div>
 
+      <div class="search-box justify-content-center d-flex">
+        <input id="input-word" class="form-control" style="margin-right:
+          0.5rem;">
+        <button class="btn btn-light" onclick="find_word()">Find</button>
+      </div>
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col" style="width:30%">WORD</th>
+            <th scope="col">MEANING</th>
 
+          </tr>
+        </thead>
+        <tbody id="tbody-box">
+          {% for word in words %}
+          {% set definition = word.definition %}
+          {% set word = word.word %}
+          <tr id="word-{{word.word}}">
+            <td>
+              <a href="/detail/{{word}}?status_give=old">{{word}}</a>
+            </td>
+            <td>{{definition}}></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
     </div>
     <!-- footer -->
