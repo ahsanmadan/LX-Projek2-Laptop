@@ -11,28 +11,65 @@ app = Flask(__name__)
 db = client.dbsparta
 
 
-@app.route("/")
+@app.route('/')
 def main():
     words_result = db.words.find({}, {'_id': False})
     words = []
     for word in words_result:
-        definition = word['definitions'][0]['shortdef']
+        definition = (word['definitions'][0]['shortdef'])
         definition = definition if type(definition) is str else definition[0]
         words.append({
             'word': word['word'],
             'definition': definition,
         })
+    msg = request.args.get('msg')
+    return render_template(
+        'index.html',
+        words=words,
+        msg=msg
+    )
 
-    return render_template("index.html",word=words)
+
+@app.route('/error')
+def error():
+    word = request.args.get('word')
+    suggestions = request.args.get('suggestions')
+    if suggestions:
+        suggestions = suggestions.split(',')
+    return render_template(
+        'error.html',
+        word=word,
+        suggestions=suggestions
+    )
 
 
-@app.route("/detail/<keyword>")
+@app.route('/detail/<keyword>')
 def detail(keyword):
-    api_key = 'a222de28-5651-402e-8a5d-222fcd2263ef'
+    api_key = "a222de28-5651-402e-8a5d-222fcd2263ef"
     url = f'https://www.dictionaryapi.com/api/v3/references/collegiate/json/{keyword}?key={api_key}'
     response = requests.get(url)
     definitions = response.json()
-    return render_template("detail.html", word=keyword, definitions=definitions, status=request.args.get('status_give', 'new'))
+
+    if not definitions:
+        return redirect(url_for(
+            'error',
+            word=keyword
+        ))
+
+    if type(definitions[0]) is str:
+        return redirect(url_for(
+            'error',
+            word=keyword,
+            suggestions=','.join(definitions)
+        ))
+
+    status = request.args.get('status_give', 'new')
+    return render_template(
+        'detail.html',
+        word=keyword,
+        definitions=definitions,
+        status=status
+    )
 
 
 @app.route('/api/save_word', methods=['POST'])
@@ -48,7 +85,7 @@ def save_word():
     db.words.insert_one(doc)
     return jsonify({
         'result': 'success',
-        'msg': f'the word {word} wa saved',
+        'msg': f'the word was saved',
         'date': datetime.now().strftime('%Y.%m.%d'),
     })
 
@@ -60,7 +97,7 @@ def delete_word():
 
     return jsonify({
         'result': 'success',
-        'msg': f'the word {word} was deleted'
+        'msg': f'the word was deleted'
     })
 
 

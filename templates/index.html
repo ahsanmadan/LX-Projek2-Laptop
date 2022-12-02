@@ -23,6 +23,29 @@
       sizes="25x25">
     <link rel="stylesheet" href="../static/css.css">
   </head>
+  <script>
+  let words = {{words | tojson}}
+  let word_list = [];
+  for (let i = 0; i < words.length; i++) {
+  word_list.push(words[i].word)
+  }
+  
+function find_word() {
+  let word = $('#input-word').val().toLowerCase().trim();
+  if (!word) {
+    alert('Please type a word');
+    return;
+  }
+  if (word_list.includes(word)) {
+    let row = $(`#word-${word}`);
+    row.addClass('highlight');
+    row.siblings().removeClass('highlight');
+    row[0].scrollIntoView();
+  } else {
+    window.location.href = `/detail/${word}?status_give=new`;
+  }
+}
+  </script>
   <body>
     <div class="wrap">
       <div class="banner" onclick="window.location.href= '/'">
@@ -36,25 +59,23 @@
       <table class="table">
         <thead class="thead-light">
           <tr>
-            <th scope="col" style="width:30%">WORD</th>
-            <th scope="col">MEANING</th>
-
+            <th scope="col" style="width: 30%">Word</th>
+            <th scope="col">Definition</th>
           </tr>
         </thead>
         <tbody id="tbody-box">
           {% for word in words %}
-          {% set definition = word.definition %}
-          {% set word = word.word %}
           <tr id="word-{{word.word}}">
             <td>
-              <a href="/detail/{{word}}?status_give=old">{{word}}</a>
+              <a href="/detail/{{word.word}}?status_give=old">
+                {{word.word}}
+              </a>
             </td>
-            <td>{{definition}}></td>
+            <td><a href="/detail/{{word.word}}?status_give=old">{{word.definition}}></a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
-
     </div>
     <!-- footer -->
     <div class="footer">
